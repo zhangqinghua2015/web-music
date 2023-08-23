@@ -2,7 +2,7 @@ const miguMusic = require('migu-music-api').default;
 const { Octokit } = require('@octokit/core');
 
 if (!process.env.GITHUB_TOKEN) {
-  throw new Error('缺少环境变量: GITHUB_TOKEN');
+  // throw new Error('缺少环境变量: GITHUB_TOKEN');
 }
 
 const octokit = new Octokit({

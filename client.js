@@ -11,6 +11,7 @@
     },
     RANDOM: {
       value: 'random',
+      cname: '随机循环',
     },
   };
   const CATCH_DATA_KEY = 'MUSIC_DATA';
@@ -19,11 +20,13 @@
   const audioDom = document.querySelector('#audio');
   const listDom = document.querySelector('#list');
   const modalDom = document.querySelector('#modal');
+  const preDom = document.querySelector('#player .operate .pre');
+  const nextDom = document.querySelector('#player .operate .next');
   const DISABLE_LIST_KEY = 'DISABLE_LIST';
 
   let songList = []; // 歌曲列表
   let currentSong = null; // 当前播放的歌曲
-  let playerMode = PLAYER_MODE.LOOP.value; // 播放模式
+  let playerMode = PLAYER_MODE.RANDOM.value; // 播放模式
   const disabledList = JSON.parse(
     window.localStorage.getItem(DISABLE_LIST_KEY) || '[]',
   ); // 忽略播放的歌曲列表
@@ -205,6 +208,51 @@
     return l[0];
   }
 
+  function getPreCurrent() {
+    let currentIndex;
+
+    let l = songList.filter((i, ind) => {
+      if (i.cid === currentSong.cid) {
+        currentIndex = ind;
+      }
+      return !i.disabled || i.cid === currentSong.cid;
+    });
+    if (currentIndex === 0) {
+      return l[l.length - 1];
+    }
+    const next = l[currentIndex - 1];
+    if (next) return next;
+    return l[0];
+  }
+
+  function getRandomSong() {
+    let currentIndex;
+
+    let l = songList.filter((i, ind) => {
+      if (i.cid === currentSong.cid) {
+        currentIndex = ind;
+      }
+      return !i.disabled || i.cid === currentSong.cid;
+    });
+    let randomIndex = Math.round(Math.random() * l.length);
+    const next = l[randomIndex];
+    if (next) return next;
+    return l[0];
+  }
+
+  function change(op) {
+    let nextSong;
+    // 循环
+    if (playerMode === PLAYER_MODE.LOOP.value || playerMode === PLAYER_MODE.SIGNAL.value) {
+      nextSong = op === 1 ? getNexCurrent().cid : getPreCurrent().cid;
+    }
+    // 随机
+    if (playerMode === PLAYER_MODE.RANDOM.value) {
+      nextSong = getRandomSong().cid;
+    }
+    playSong(nextSong);
+  }
+
   // 移出播放列表
   document.querySelector('#list').addEventListener('click', (e) => {
     // 点击 item
@@ -256,6 +304,7 @@
     }
     // 随机
     if (playerMode === PLAYER_MODE.RANDOM.value) {
+      nextSong = getRandomSong().cid;
     }
     // 单曲循环
     if (playerMode === PLAYER_MODE.SIGNAL.value) {
@@ -285,6 +334,17 @@
   });
   document.querySelector('#modal .footer').addEventListener('click', (e) => {
     modalDom.style.display = '';
+  });
+
+  document.querySelector('#player .operate .pre').addEventListener('click', (e) => {
+    preDom.style.backgroundColor = '#fff';
+    change(0);
+    preDom.style.backgroundColor = '#f6f6f6';
+  });
+  document.querySelector('#player .operate .next').addEventListener('click', (e) => {
+    nextDom.style.backgroundColor = '#fff';
+    change(1);
+    nextDom.style.backgroundColor = '#f6f6f6';
   });
 })();
 

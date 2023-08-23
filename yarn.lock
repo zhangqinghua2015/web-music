@@ -623,7 +623,7 @@ methods@~1.1.2:
 
 migu-music-api@^1.0.1:
   version "1.0.1"
-  resolved "https://registry.npmmirror.com/migu-music-api/-/migu-music-api-1.0.1.tgz#07d8c9b9061793a99d79f3a41f7b2e74218f8c0e"
+  resolved "https://registry.yarnpkg.com/migu-music-api/-/migu-music-api-1.0.1.tgz#07d8c9b9061793a99d79f3a41f7b2e74218f8c0e"
   integrity sha512-mzpQFekzeazHTkKuE7CJjeBsEqLABh1IPtWmUY3y3+YjJm2n5L9PydLVx6cl1tvh3pS+eqZAKpo+FyWpHbXv/A==
   dependencies:
     axios "^0.21.4"

@@ -208,8 +208,32 @@ input {
 }
 
 #player .operate {
-  flex: 0 0 40px;
-  display: none;
+  margin-left: 5px;
+  margin-right: 5px;
+  flex: 0 0 115px;
+  display: flex;
+}
+
+#player .operate .next {
+  flex: 0 0 50px;
+  display: flex;
+  background-color: #f6f6f6;
+  background-image: url('./icon/next.png');
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  /*border: #dddddd 1px dashed;*/
+}
+
+#player .operate .pre {
+  flex: 0 0 50px;
+  display: flex;
+  background-color: #f6f6f6;
+  background-image: url('./icon/pre.png');
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  /*border: #dddddd 1px dashed;*/
 }
 
 .modal {
