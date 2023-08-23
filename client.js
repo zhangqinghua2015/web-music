@@ -105,7 +105,8 @@
   /** 获取最新的文件地址 */
   function getJsonUrl() {
     return fetch(
-        'https://gitee.com/umac/web-music/raw/master/web-music.json',
+        // 'https://gitee.com/umac/web-music/raw/master/web-music.json',
+        './web-music.json',
       {
         headers: {
           Authorization: '',
