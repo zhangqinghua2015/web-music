@@ -5,8 +5,8 @@
       value: 'loop',
       cname: '列表循环',
     },
-    SIGNAL: {
-      value: 'signal',
+    SINGLE: {
+      value: 'single',
       cname: '单曲循环',
     },
     RANDOM: {
@@ -113,11 +113,11 @@
         }
       }
     )
-      .then((res) => res.json())
-      .then((res) => {
+      .then((res) => res.json());
+      /*.then((res) => {
         // return res.files['jay-music.json'].raw_url;
         return "https://gist.githubusercontent.com/zhangqinghua2015/4aee12553ae3e6b8c143662cfb854770/raw/2c17a3c68eb5d39d0c4810f9c6ddac6ef88ef93a/jay-music.json  ";
-      });
+      });*/
   }
 
   function getDataList() {
@@ -246,7 +246,7 @@
   function change(op) {
     let nextSong;
     // 循环
-    if (playerMode === PLAYER_MODE.LOOP.value || playerMode === PLAYER_MODE.SIGNAL.value) {
+    if (playerMode === PLAYER_MODE.LOOP.value || playerMode === PLAYER_MODE.SINGLE.value) {
       nextSong = op === 1 ? getNexCurrent().cid : getPreCurrent().cid;
     }
     // 随机
@@ -310,7 +310,7 @@
       nextSong = getRandomSong().cid;
     }
     // 单曲循环
-    if (playerMode === PLAYER_MODE.SIGNAL.value) {
+    if (playerMode === PLAYER_MODE.SINGLE.value) {
       nextSong = currentSong.cid;
     }
     playSong(nextSong);
@@ -339,21 +339,37 @@
     modalDom.style.display = '';
   });
 
-  document.querySelector('#player .operate .pre').addEventListener('click', (e) => {
+  document.querySelector('#player .operate .pre').addEventListener('mousedown', (e) => {
     preDom.style.backgroundColor = '#fff';
+  });
+  document.querySelector('#player .operate .pre').addEventListener('mouseup', (e) => {
     change(0);
     preDom.style.backgroundColor = '#f6f6f6';
   });
-  document.querySelector('#player .operate .next').addEventListener('click', (e) => {
+
+  document.querySelector('#player .operate .next').addEventListener('mousedown', (e) => {
     nextDom.style.backgroundColor = '#fff';
+  });
+  document.querySelector('#player .operate .next').addEventListener('mouseup', (e) => {
     change(1);
     nextDom.style.backgroundColor = '#f6f6f6';
   });
-  document.querySelector('#player .operate .change').addEventListener('click', (e) => {
-    
-    nextDom.style.backgroundColor = '#fff';
-    change(1);
-    nextDom.style.backgroundColor = '#f6f6f6';
+
+  document.querySelector('#player .operate .change').addEventListener('mousedown', (e) => {
+    changeDom.style.backgroundColor = '#fff';
+  });
+  document.querySelector('#player .operate .change').addEventListener('mouseup', (e) => {
+    if (playerMode === PLAYER_MODE.RANDOM.value) {
+      playerMode = PLAYER_MODE.SINGLE.value;
+      changeDom.style.backgroundImage = 'url("./icon/single.png")';
+    } else if (playerMode === PLAYER_MODE.SINGLE.value) {
+      playerMode = PLAYER_MODE.LOOP.value;
+      changeDom.style.backgroundImage = 'url("./icon/loop.png")';
+    } else if (playerMode === PLAYER_MODE.LOOP.value) {
+      playerMode = PLAYER_MODE.RANDOM.value;
+      changeDom.style.backgroundImage = 'url("./icon/random.png")';
+    }
+    changeDom.style.backgroundColor = '#f6f6f6';
   });
 
 })();
