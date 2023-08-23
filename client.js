@@ -106,7 +106,8 @@
   function getJsonUrl() {
     return fetch(
         // 'https://gitee.com/umac/web-music/raw/master/web-music.json',
-        './web-music.json',
+        // './web-music.json',
+        'https://zhangqinghua2015.github.io/web-music/web-music.json',
       {
         headers: {
           Authorization: '',
