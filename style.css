@@ -210,7 +210,7 @@ input {
 #player .operate {
   margin-left: 5px;
   margin-right: 5px;
-  flex: 0 0 115px;
+  flex: 0 0 165px;
   display: flex;
 }
 
@@ -230,6 +230,17 @@ input {
   display: flex;
   background-color: #f6f6f6;
   background-image: url('./icon/pre.png');
+  background-size: 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  /*border: #dddddd 1px dashed;*/
+}
+
+#player .operate .change {
+  flex: 0 0 50px;
+  display: flex;
+  background-color: #f6f6f6;
+  background-image: url('./icon/random.png');
   background-size: 80%;
   background-position: center;
   background-repeat: no-repeat;

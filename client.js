@@ -22,6 +22,7 @@
   const modalDom = document.querySelector('#modal');
   const preDom = document.querySelector('#player .operate .pre');
   const nextDom = document.querySelector('#player .operate .next');
+  const changeDom = document.querySelector('#player .operate .change');
   const DISABLE_LIST_KEY = 'DISABLE_LIST';
 
   let songList = []; // 歌曲列表
@@ -348,6 +349,13 @@
     change(1);
     nextDom.style.backgroundColor = '#f6f6f6';
   });
+  document.querySelector('#player .operate .change').addEventListener('click', (e) => {
+    
+    nextDom.style.backgroundColor = '#fff';
+    change(1);
+    nextDom.style.backgroundColor = '#f6f6f6';
+  });
+
 })();
 
 function isJson(value) {
