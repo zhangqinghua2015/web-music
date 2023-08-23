@@ -99,7 +99,7 @@
   /** 获取最新的文件地址 */
   function getJsonUrl() {
     return fetch(
-      'https://api.github.com/gists/cb11eaafbe69fc7ba63c38f9ff40e0d9',
+        './web-music.json',
       {
         headers: {
           Authorization: '',
@@ -109,7 +109,8 @@
     )
       .then((res) => res.json())
       .then((res) => {
-        return res.files['jay-music.json'].raw_url;
+        // return res.files['jay-music.json'].raw_url;
+        return "https://gist.githubusercontent.com/zhangqinghua2015/4aee12553ae3e6b8c143662cfb854770/raw/2c17a3c68eb5d39d0c4810f9c6ddac6ef88ef93a/jay-music.json  ";
       });
   }
 
@@ -125,6 +126,7 @@
 
   /** 拉取歌曲列表 */
   function getList() {
+    // window.localStorage.removeItem(CATCH_DATA_KEY);
     const CATCH_DATA = window.localStorage.getItem(CATCH_DATA_KEY);
     const data = isJson(CATCH_DATA);
     if (data) {
