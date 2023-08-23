@@ -74,6 +74,8 @@
     document
       .querySelector(`#list .item[data-cid="${currentItem.cid}"]`)
       .classList.add('active');
+    document
+        .querySelector(`#list .item[data-cid="${currentItem.cid}"]`).scrollIntoView({behavior: 'smooth', block: 'center'});
 
     // 设置模态框的内容
     modalDom.querySelector('.title').innerHTML = currentSong.songInfo.name;
