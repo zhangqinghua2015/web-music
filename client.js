@@ -206,33 +206,58 @@
   /** 获取下一首有效歌曲 */
   function getNexCurrent() {
     let currentIndex;
+    let nextIndex;
 
-    let l = songList.filter((i, ind) => {
-      if (i.cid === currentSong.cid) {
-        currentIndex = ind;
-      }
-      return !i.disabled || i.cid === currentSong.cid;
-    });
-    const next = l[currentIndex + 1];
-    if (next) return next;
-    return l[0];
+    for (let index = 0; index < songList.length; index++) {
+        if (songList[index].cid === currentSong.cid) {
+            currentIndex = index;
+            continue;
+        }
+        if (typeof(currentIndex) === "undefined") {
+            continue;
+        }
+        if (index > currentIndex && !songList[index].disabled) {
+            nextIndex = index;
+            break;
+        }
+    }
+    if (typeof(nextIndex) === "undefined") {
+        for (let index = 0; index < songList.length; index++) {
+            if (!songList[index].disabled) {
+                nextIndex = index;
+                break;
+            }
+        }
+    }
+    return songList[nextIndex];
   }
 
   function getPreCurrent() {
-    let currentIndex;
+      let currentIndex;
+      let nextIndex;
 
-    let l = songList.filter((i, ind) => {
-      if (i.cid === currentSong.cid) {
-        currentIndex = ind;
+      for (let index = songList.length - 1; index >= 0; index--) {
+          if (songList[index].cid === currentSong.cid) {
+              currentIndex = index;
+              continue;
+          }
+          if (typeof(currentIndex) === "undefined") {
+              continue;
+          }
+          if (index < currentIndex && !songList[index].disabled) {
+              nextIndex = index;
+              break;
+          }
       }
-      return !i.disabled || i.cid === currentSong.cid;
-    });
-    if (currentIndex === 0) {
-      return l[l.length - 1];
-    }
-    const next = l[currentIndex - 1];
-    if (next) return next;
-    return l[0];
+      if (typeof(nextIndex) === "undefined") {
+          for (let index = 0; index < songList.length; index++) {
+              if (!songList[index].disabled) {
+                  nextIndex = index;
+                  break;
+              }
+          }
+      }
+      return songList[nextIndex];
   }
 
   function getRandomSong() {
