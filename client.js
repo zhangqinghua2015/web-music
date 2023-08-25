@@ -24,6 +24,7 @@
   const nextDom = document.querySelector('#player .operate .next');
   const changeDom = document.querySelector('#player .operate .change');
   const DISABLE_LIST_KEY = 'DISABLE_LIST';
+  const CURRENT_SONG_KEY = 'CURRENT_SONG';
 
   let songList = []; // 歌曲列表
   let currentSong = null; // 当前播放的歌曲
@@ -98,6 +99,7 @@
     } else {
       // 播放
       currentSong = songList.find((s) => s.cid === cid);
+      window.localStorage.setItem(CURRENT_SONG_KEY, JSON.stringify(currentSong));
       setPlayer();
       audioDom.play();
     }
@@ -169,6 +171,11 @@
         songInfo: item.songInfo,
       };
     });
+    let localCurrentSong = window.localStorage.getItem(CURRENT_SONG_KEY);
+    if (localCurrentSong) {
+        currentSong = songList.find((s) => s.cid === JSON.parse(localCurrentSong).cid);
+    }
+
     if (!currentSong) {
       currentSong = songList[0];
     }
