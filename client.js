@@ -64,7 +64,7 @@
     const songUrls = [
       currentItem.songInfo.flac,
       currentItem.songInfo['320'],
-      currentItem.songInfo['320'],
+      currentItem.songInfo['128'],
     ].filter((s) => !!s);
     audioDom.setAttribute('src', songUrls[0]);
 
@@ -80,9 +80,10 @@
 
     // 设置模态框的内容
     modalDom.querySelector('.title').innerHTML = currentSong.songInfo.name;
-    modalDom.querySelector('.lyric').innerHTML = currentSong.songInfo.lyric
-      .replace(/\r\n/gi, '</br>')
-      .replace(/\[(.+?)\]/g, '');
+    // modalDom.querySelector('.lyric').innerHTML = currentSong.songInfo.lyric
+    //   .replace(/\r\n/gi, '</br>')
+    //   .replace(/\[(.+?)\]/g, '');
+    modalDom.querySelector('.lyric').innerHTML = formatLyric();
     modalDom
       .querySelector('.cover')
       .setAttribute('src', currentSong.songInfo.bigPicUrl);
@@ -288,6 +289,22 @@
     playSong(nextSong);
   }
 
+  function formatLyric() {
+      // [00:01.00]歌曲名 逆鳞\r\n[00:02.00]歌手名 周杰伦\r\n[00:03.00]作词：黃俊郎\r\n
+      let lyricArr = currentSong.songInfo.lyric.split('\r\n');
+      let lyricHtml = '';
+      lyricArr.forEach((lyric, index) => {
+            let i = lyric.indexOf(']');
+            if (i < 0) {
+                return;
+            }
+            let lyricTime = lyric.substring(1, i);
+            let lyricContent = lyric.substring(i + 1, lyric.length);
+            lyricHtml += '<span id="lyric' + index + '" n="' + index + '" lyric-time="' + lyricTime + '">' + lyricContent + '</span><br>';
+      });
+      return lyricHtml;
+  }
+
   // 移出播放列表
   document.querySelector('#list').addEventListener('click', (e) => {
     // 点击 item
@@ -347,6 +364,24 @@
     }
     playSong(nextSong);
   };
+
+  audioDom.ontimeupdate = (e) => {
+    let curTime = audioDom.currentTime;
+    let lineNum = 0;
+    document.querySelectorAll('.lyric span').forEach((item) => {
+      let timeArr = item.getAttribute('lyric-time').split(':');
+      let lyricTime = parseFloat(timeArr[0]) * 60 + parseFloat(timeArr[1]);
+      if (curTime >= lyricTime) {
+        item.className ='active';
+        lineNum = item.getAttribute('n');
+      } else {
+          item.className ='';
+      }
+    });
+    document.querySelector('#lyric' + lineNum).scrollIntoView({behavior: 'smooth', block: 'center'});
+  };
+
+
 
   let timer;
   // 搜索

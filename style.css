@@ -297,3 +297,7 @@ input {
   margin: 30px auto;
   line-height: 2;
 }
+
+.modal .lyric .active {
+  color: #14eeb3;
+}
