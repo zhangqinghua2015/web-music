@@ -290,7 +290,7 @@ input {
   display: block;
   margin: 10px auto;
 }
-.modal .lyric {
+.lyric {
   text-align: center;
   max-height: 50vh;
   overflow-y: auto;
@@ -298,6 +298,11 @@ input {
   line-height: 2;
 }
 
-.modal .lyric .active {
+.lyric .active {
   color: #14eeb3;
+}
+
+.desktopLyric {
+  margin: 0 !important;
+  overflow-y: unset !important;
 }

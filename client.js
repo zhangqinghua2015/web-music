@@ -23,9 +23,11 @@
   const preDom = document.querySelector('#player .operate .pre');
   const nextDom = document.querySelector('#player .operate .next');
   const changeDom = document.querySelector('#player .operate .change');
+  const desktopLyric = document.querySelector('#pipButton');
   const DISABLE_LIST_KEY = 'DISABLE_LIST';
   const CURRENT_SONG_KEY = 'CURRENT_SONG';
 
+  let pipWindowRef = null;
   let songList = []; // 歌曲列表
   let currentSong = null; // 当前播放的歌曲
   let playerMode = PLAYER_MODE.RANDOM.value; // 播放模式
@@ -375,6 +377,20 @@
   audioDom.ontimeupdate = (e) => {
     let curTime = audioDom.currentTime;
     let lineNum = 0;
+    if (pipWindowRef) {
+        pipWindowRef.document.querySelectorAll('.lyric span').forEach((item) => {
+            let timeArr = item.getAttribute('lyric-time').split(':');
+            let lyricTime = parseFloat(timeArr[0]) * 60 + parseFloat(timeArr[1]);
+            if (curTime >= lyricTime) {
+                item.className ='active';
+                lineNum = item.getAttribute('n');
+            } else {
+                item.className ='';
+            }
+        });
+        pipWindowRef.document.querySelector('#lyric' + lineNum).scrollIntoView({behavior: 'smooth', block: 'center'});
+        return;
+    }
     document.querySelectorAll('.lyric span').forEach((item) => {
       let timeArr = item.getAttribute('lyric-time').split(':');
       let lyricTime = parseFloat(timeArr[0]) * 60 + parseFloat(timeArr[1]);
@@ -388,6 +404,47 @@
     document.querySelector('#lyric' + lineNum).scrollIntoView({behavior: 'smooth', block: 'center'});
   };
 
+    desktopLyric.addEventListener("click", async () => {
+        const lyricPlayer = document.querySelector(".lyric");
+
+        // 打开一个画中画窗口。
+        const pipWindow = await documentPictureInPicture.requestWindow({
+            width: 300,
+            height: 120,
+        });
+        // 从初始文档中复制样式表，以使播放器外观相同。
+        const allCSS = [...document.styleSheets]
+            .map((styleSheet) => {
+                try {
+                    return [...styleSheet.cssRules].map((r) => r.cssText).join("");
+                } catch (e) {
+                    const link = document.createElement("link");
+                    link.rel = "stylesheet";
+                    link.type = styleSheet.type;
+                    link.media = styleSheet.media;
+                    link.href = styleSheet.href;
+                    pipWindow.document.head.appendChild(link);
+                }
+            })
+            .filter(Boolean)
+            .join("\n");
+
+        const style = document.createElement("style");
+        style.textContent = allCSS;
+        // 将播放器移动到画中画窗口中。
+        pipWindow.document.body.append(lyricPlayer);
+        lyricPlayer.classList.add("desktopLyric");
+        // 当画中画窗口关闭时，将播放器移回原位置。
+        pipWindow.addEventListener("pagehide", (event) => {
+            const playerContainer = document.querySelector(".body");
+            const lyricPlayer = event.target.querySelector(".lyric");
+            playerContainer.append(lyricPlayer);
+            lyricPlayer.classList.remove("desktopLyric");
+            pipWindowRef = null;
+        });
+        pipWindowRef = pipWindow;
+        modalDom.style.display = '';
+    });
 
 
   let timer;
