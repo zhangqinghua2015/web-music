@@ -431,6 +431,8 @@
 
         const style = document.createElement("style");
         style.textContent = allCSS;
+        pipWindow.document.head.appendChild(style);
+
         // 将播放器移动到画中画窗口中。
         pipWindow.document.body.append(lyricPlayer);
         lyricPlayer.classList.add("desktopLyric");
