@@ -86,7 +86,11 @@
     // modalDom.querySelector('.lyric').innerHTML = currentSong.songInfo.lyric
     //   .replace(/\r\n/gi, '</br>')
     //   .replace(/\[(.+?)\]/g, '');
-    modalDom.querySelector('.lyric').innerHTML = formatLyric();
+    if (pipWindowRef) {
+        pipWindowRef.document.querySelector('.lyric').innerHTML = formatLyric();
+    } else {
+        modalDom.querySelector('.lyric').innerHTML = formatLyric();
+    }
     modalDom
       .querySelector('.cover')
       .setAttribute('src', currentSong.songInfo.bigPicUrl);
