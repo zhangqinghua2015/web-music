@@ -70,6 +70,10 @@
       currentItem.songInfo['128'],
     ].filter((s) => !!s);
     audioDom.setAttribute('src', songUrls[0]);
+    audioDom.addEventListener('error', (e) => {
+        e.target.src = songUrls[1];
+        e.target.play().catch(e => {});
+    });
 
     // 设置列表中播放歌曲的选中项
     document
