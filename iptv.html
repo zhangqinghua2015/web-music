@@ -9,6 +9,7 @@
       border: 1px solid #e0e0e0;
       border-radius: 8px;
       transition: box-shadow 0.3s;
+      font-size: xxx-large;
     }
     .genre-header {
       padding: 14px;
@@ -75,7 +76,9 @@
       margin-bottom: 20px;
     }
     #sourceInput {
-      width: 60%;
+      height: 50px;
+      font-size: xx-large;
+      width: 75%;
       padding: 8px;
       margin-right: 10px;
     }
@@ -86,11 +89,13 @@
 
     /* 基础按钮样式 */
     #loadCustomButton {
+      width: 20%;
+      height: 70px;
+      font-size: xx-large;
       padding: 8px 16px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 16px;
       font-weight: 500;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
@@ -150,16 +155,10 @@
   </div>
   <input type="text" id="sourceInput"
          placeholder="加载自定义IPTV源，示例：https://example.com/source1.txt, https://example.com/source2.txt">
-  <button id="loadCustomButton" onclick="loadCustomSource()">加载</button>
+  <button id="loadCustomButton" onclick="loadCustomSource()">重新加载</button>
   <div id="savedSources"></div>
 </div>
 <div id="app"><div class="loader">加载中...</div></div>
-
-<!-- 引入样式 -->
-<!--<link href="https://cdn.bootcss.com/video.js/7.6.5/alt/video-js-cdn.min.css" rel="stylesheet">-->
-<!-- 引入JS -->
-<!--<script src="https://cdn.bootcss.com/video.js/6.6.2/video.js"></script>-->
-<!--<script src="https://cdn.bootcss.com/videojs-contrib-hls/5.15.0/videojs-contrib-hls.min.js"></script>-->
 
 <!-- 引入样式 -->
 <link href="video/video-js-cdn.min.css" rel="stylesheet">
