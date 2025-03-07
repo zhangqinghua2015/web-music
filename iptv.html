@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>IPTV直播源</title>
+  <style>
+    .genre-group {
+      margin: 15px 0;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      transition: box-shadow 0.3s;
+    }
+    .genre-header {
+      padding: 14px;
+      background: #f8f9fa;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .genre-header::after {
+      content: '▶';
+      margin-left: auto;
+      transition: transform 0.2s;
+    }
+    .genre-header.active::after {
+      transform: rotate(90deg);
+    }
+    .channel-list {
+      display: none;
+      padding: 0 14px;
+    }
+    .channel-group {
+      margin: 8px 0;
+      border-left: 3px solid #2196F3;
+    }
+    .channel-name {
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .url-list {
+      display: none;
+      padding-left: 20px;
+    }
+    .url-item {
+      padding: 8px;
+      margin: 4px 0;
+      background: #f5f5f5;
+      word-break: break-all;
+    /*}*/
+    /*.url-item {*/
+        color: #2196F3;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .url-item:hover {
+        color: #1976D2;
+        text-decoration: underline;
+    }
+    .url-item.loading::after {
+        content: '🔄';
+        margin-left: 8px;
+    }
+    .url-item.error {
+        color: #f44336;
+    }
+    .config-panel {
+      position: sticky; /* 粘性定位 */
+      top: 0;           /* 触发固定位置的条件 */
+      width: 100%;      /* 宽度自适应容器 */
+      height: auto;     /* 自定义高度 */
+      padding: 15px;
+      background: #f5f5f5;
+      margin-bottom: 20px;
+    }
+    #sourceInput {
+      width: 60%;
+      padding: 8px;
+      margin-right: 10px;
+    }
+    #savedSources {
+      margin-top: 10px;
+      color: #666;
+    }
+
+    /* 基础按钮样式 */
+    #loadCustomButton {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background-image: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 悬停态增强 */
+    #loadCustomButton:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      background-image: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    }
+
+    /* 点击动效 */
+    #loadCustomButton:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 加载状态指示 */
+    #loadCustomButton.loading::after {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-left: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+    #loadCustomButton:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      background-image: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #video-div {
+      display: flex;
+      justify-content: center; /* 水平居中 */
+      align-items: center; /* 垂直居中 */
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="config-panel">
+  <div id="video-div">
+    <video id="videoPlayer" class="video-js vjs-default-skin" controls height="180"></video>
+  </div>
+  <input type="text" id="sourceInput"
+         placeholder="加载自定义IPTV源，示例：https://example.com/source1.txt, https://example.com/source2.txt">
+  <button id="loadCustomButton" onclick="loadCustomSource()">加载</button>
+  <div id="savedSources"></div>
+</div>
+<div id="app"><div class="loader">加载中...</div></div>
+
+<!-- 引入样式 -->
+<!--<link href="https://cdn.bootcss.com/video.js/7.6.5/alt/video-js-cdn.min.css" rel="stylesheet">-->
+<!-- 引入JS -->
+<!--<script src="https://cdn.bootcss.com/video.js/6.6.2/video.js"></script>-->
+<!--<script src="https://cdn.bootcss.com/videojs-contrib-hls/5.15.0/videojs-contrib-hls.min.js"></script>-->
+
+<!-- 引入样式 -->
+<link href="video/video-js-cdn.min.css" rel="stylesheet">
+<!-- 引入JS -->
+<script src="video/video.js"></script>
+<script src="video/videojs-contrib-hls.min.js"></script>
+
+<script>
+  // 数据源配置（含备用地址）
+  const SOURCES = [
+    'https://gh-proxy.com/raw.githubusercontent.com/Guovin/iptv-database/master/result.txt'
+    // , 'https://ghfast.top/https://raw.githubusercontent.com/vbskycn/iptv/master/tv/iptv4.txt'
+  ]
+  const player = videojs('videoPlayer')
+
+  // 结构化数据解析‌:ml-citation{ref="1,4" data="citationList"}
+  function parseData(text) {
+    const tree = []
+    let currentGroup = null
+
+    text.split('\n').forEach(line => {
+      line = line.trim()
+      if (!line) return
+
+      if (line.endsWith(',#genre#')) {
+        currentGroup = {
+          title: line.replace(/,#genre#/g, ''),
+          channels: new Map()
+        }
+        tree.push(currentGroup)
+      } else if (currentGroup) {
+        const [name, url] = line.split(',').map(s => s.trim())
+        if (name && url) {
+          if (!currentGroup.channels.has(name)) {
+            currentGroup.channels.set(name, [])
+          }
+          currentGroup.channels.get(name).push(url)
+        }
+      }
+    })
+
+    return tree.map(group => ({
+      title: group.title,
+      channels: Array.from(group.channels.entries())
+    }))
+  }
+
+  // 构建DOM元素‌:ml-citation{ref="2,4" data="citationList"}
+  function createGroupElement(group) {
+    const container = document.createElement('div')
+    container.className = 'genre-group'
+
+    container.innerHTML = `
+        <div class="genre-header">${group.title}</div>
+        <div class="channel-list"></div>
+    `
+
+    const listContainer = container.querySelector('.channel-list')
+    group.channels.forEach(([name, urls]) => {
+      const channelDiv = document.createElement('div')
+      channelDiv.className = 'channel-group'
+      channelDiv.innerHTML = `
+            <div class="channel-name">${name} (${urls.length}源)</div>
+            <div class="url-list">
+                ${urls.map(url => `<div class="url-item">
+                  <a href="javascript:void(0);"
+                     class="url-item"
+                     rel="noopener noreferrer" onclick="playTV('${url}')">
+                      ${url}
+                  </a>
+                </div>`).join('')}
+            </div>
+        `
+      listContainer.appendChild(channelDiv)
+    })
+
+    // 绑定交互事件‌:ml-citation{ref="2" data="citationList"}
+    container.querySelector('.genre-header').addEventListener('click', function() {
+      this.classList.toggle('active')
+      this.nextElementSibling.style.display =
+              this.classList.contains('active') ? 'block' : 'none'
+    })
+
+    // 子频道交互绑定
+    container.querySelectorAll('.channel-name').forEach(header => {
+      header.addEventListener('click', function() {
+        this.classList.toggle('active')
+        this.nextElementSibling.style.display =
+                this.classList.contains('active') ? 'block' : 'none'
+      })
+    })
+
+    return container
+  }
+
+  // 初始化加载‌:ml-citation{ref="3,6" data="citationList"}
+  async function init(urls) {
+    try {
+
+      const response = urls ? await fetchWithRetry(urls) : await fetchWithRetry(SOURCES)
+      const data = parseData(response)
+
+      const app = document.getElementById('app')
+      app.innerHTML = ''
+      data.forEach(group => {
+        app.appendChild(createGroupElement(group))
+      })
+
+    } catch (error) {
+      app.innerHTML = `<div style="color:red">数据加载失败: ${error.message}</div>`
+    }
+  }
+
+  // 容灾请求方法‌:ml-citation{ref="3" data="citationList"}
+  async function fetchWithRetry(urls) {
+    for (const url of urls) {
+      try {
+        console.log(url)
+        const resp = await fetch(url)
+        if (resp.ok) return await resp.text()
+      } catch (e) {
+        console.warn(`请求失败: ${url}`)
+      }
+    }
+    throw new Error('所有数据源不可用')
+  }
+
+  // 保存数据源到localStorage
+  function saveSources(urls) {
+    localStorage.setItem('customIPTVSource', JSON.stringify(urls))
+  }
+
+  // 加载历史数据源
+  function loadSavedSources() {
+    const saved = localStorage.getItem('customIPTVSource')
+    return saved ? JSON.parse(saved) : []
+  }
+
+  // 更新已保存显示
+  function updateSavedDisplay(urls) {
+    const display = urls.map(url =>
+            `<div>✓ ${url} <button onclick="removeSource('${url}')">移除</button></div>`
+    ).join('')
+    document.getElementById('savedSources').innerHTML = display
+  }
+
+  // 移除单个数据源
+  function removeSource(url) {
+    const updated = loadSavedSources().filter(u => u !== url)
+    saveSources(updated)
+    updateSavedDisplay(updated)
+  }
+
+  // 用户触发加载
+  function loadCustomSource() {
+    const input = document.getElementById('sourceInput')
+    if (!input.value) {
+      init()
+      return
+    }
+    const urls = input.value.split(',').map(url => url.trim()).filter(Boolean)
+    saveSources(urls)
+    init(urls)
+  }
+
+  // 播放
+  function playTV(url) {
+    player.src({src: url, type: 'application/x-mpegURL'})
+    player.load()  // 强制重新加载视频 ‌:ml-citation{ref="4,6" data="citationList"}
+    player.play()
+  }
+
+  // 初始化加载历史数据
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = loadSavedSources()
+    if (saved.length) {
+      document.getElementById('sourceInput').value = saved.join(', ')
+      updateSavedDisplay(saved)
+      init(saved)
+    } else {
+      // 启动应用
+      init()
+    }
+
+  })
+
+</script>
+</body>
+</html>

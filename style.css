@@ -54,7 +54,7 @@ input {
 }
 
 #search input {
-  width: 100%;
+  width: 85%;
   height: 100%;
   background-color: #f7f7f7;
   padding: 0 1em;
@@ -66,6 +66,32 @@ input {
 #search input:focus {
   border-color: var(--color-primary);
 }
+
+#search span {
+  display: inline-block;  /* 关键：转换显示模式 */
+  white-space: nowrap;    /* 单行显示 */
+  overflow: hidden;       /* 隐藏溢出 */
+  text-overflow: ellipsis;/* 省略号 */
+  width: 15%;
+  height: 100%;
+  position: relative;
+  background-color: #f7f7f7;
+  padding: 0 1em;
+  border: 1px solid #ccc;
+  outline: none;
+  border-radius: var(--border-radius);
+}
+
+#search  span a {
+  /*display: inline-flex;*/
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #333 !important; /* !important覆盖其他样式 */
+  text-decoration: none;
+}
+
 
 #list {
   flex: 1;
