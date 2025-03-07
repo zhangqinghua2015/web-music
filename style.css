@@ -316,10 +316,19 @@ input {
   display: block;
   margin: 10px auto;
 }
-.modal .lyric {
+.lyric {
   text-align: center;
   max-height: 50vh;
   overflow-y: auto;
   margin: 30px auto;
   line-height: 2;
+}
+
+.lyric .active {
+  color: #14eeb3;
+}
+
+.desktopLyric {
+  margin: 0 !important;
+  overflow-y: unset !important;
 }
