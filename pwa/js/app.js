@@ -355,12 +355,8 @@
         const toggleBtn = document.getElementById('toggleAmountVisibility');
         if (isAmountVisible) {
             toggleBtn.innerHTML = '<i class="bi bi-eye"></i><span class="d-none d-md-inline"> 显示金额</span>';
-            toggleBtn.classList.remove('btn-secondary');
-            toggleBtn.classList.add('btn-outline-secondary');
         } else {
             toggleBtn.innerHTML = '<i class="bi bi-eye-slash"></i><span class="d-none d-md-inline"> 隐藏金额</span>';
-            toggleBtn.classList.remove('btn-outline-secondary');
-            toggleBtn.classList.add('btn-secondary');
         }
 
         renderImportedFunds();
@@ -439,13 +435,6 @@
             await FundDB.cleanOldHistory(30);
         } catch (error) {
             showError('数据库初始化失败: ' + error.message);
-        }
-
-        // 初始化金额显示按钮
-        const toggleBtn = document.getElementById('toggleAmountVisibility');
-        if (toggleBtn) {
-            toggleBtn.innerHTML = '<i class="bi bi-eye-slash"></i><span class="d-none d-md-inline"> 隐藏金额</span>';
-            toggleBtn.classList.add('btn-secondary');
         }
 
         // 加载已导入基金
