@@ -4,8 +4,8 @@
 const FundApi = {
     // CORS 代理列表（多个备用）
     CORS_PROXIES: [
-        'https://corsproxy.io/?',
         'https://api.codetabs.com/v1/proxy?quest=',
+        'https://corsproxy.io/?',
         'https://api.allorigins.win/raw?url='
     ],
 

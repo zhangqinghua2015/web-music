@@ -86,13 +86,21 @@ body {
 
 /* ========== 盈亏颜色 ========== */
 .profit-positive {
-    color: var(--danger-color);
+    color: var(--danger-color) !important;
     font-weight: bold;
 }
 
 .profit-negative {
-    color: var(--success-color);
+    color: var(--success-color) !important;
     font-weight: bold;
+}
+
+.text-positive {
+    color: var(--danger-color) !important;
+}
+
+.text-negative {
+    color: var(--success-color) !important;
 }
 
 /* ========== 按钮样式 ========== */

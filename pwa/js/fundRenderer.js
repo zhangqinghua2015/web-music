@@ -76,7 +76,7 @@ const FundRenderer = {
         const showAmount = !isImported || isAmountVisible;
 
         if (fund.gsz) {
-            const gszzlClass = fund.gszzl !== null ? (parseFloat(fund.gszzl) >= 0 ? 'text-danger' : 'text-success') : '';
+            const gszzlClass = fund.gszzl !== null ? (parseFloat(fund.gszzl) >= 0 ? 'profit-positive' : 'profit-negative') : '';
             const dayProfitClass = fund.dayProfit !== null ? (fund.dayProfit >= 0 ? 'profit-positive' : 'profit-negative') : '';
 
             return `

@@ -10,10 +10,12 @@
     window.currentSortOrder = 'desc';
     window.importedFundsData = [];
     window.isAmountVisible = false;
+    window.isLoadingFunds = false;
 
     // ========== 已导入基金管理 ==========
     window.loadImportedFunds = async function() {
         console.log('loadImportedFunds 开始执行');
+        isLoadingFunds = true;
         const fundList = document.getElementById('importedFundList');
         fundList.innerHTML = `
             <div class="col-12 text-center py-5">
@@ -27,13 +29,17 @@
             console.log('准备调用 FundApi.getPositions()');
             importedFundsData = await FundApi.getPositions();
             console.log('FundApi.getPositions() 返回结果:', importedFundsData);
-            console.log('准备调用 renderImportedFunds()');
-            renderImportedFunds();
-            console.log('renderImportedFunds() 执行完成');
         } catch (error) {
             console.error('loadImportedFunds 发生错误:', error);
             showImportedFundsError('加载基金记录失败: ' + error.message);
+            isLoadingFunds = false;
+            return;
         }
+        
+        console.log('准备调用 renderImportedFunds()');
+        isLoadingFunds = false;
+        renderImportedFunds();
+        console.log('renderImportedFunds() 执行完成');
     };
 
     window.renderImportedFunds = function() {
@@ -43,6 +49,11 @@
         const fundList = document.getElementById('importedFundList');
         const statisticsCard = document.getElementById('importedStatisticsCard');
 
+        if (isLoadingFunds) {
+            console.log('正在加载中，跳过渲染');
+            return;
+        }
+        
         if (!importedFundsData || importedFundsData.length === 0) {
             console.log('没有基金数据，显示空状态');
             fundList.innerHTML = `
