@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <title>基金持仓分析</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="text-center mb-4">
+                    <h1 class="display-5 fw-bold text-primary">
+                        <i class="bi bi-bank"></i> 基金持仓估值
+                    </h1>
+                    <p class="text-muted small">本地版 - 数据存储在浏览器中</p>
+                </div>
+
+                <!-- Tab导航 -->
+                <ul class="nav nav-tabs mb-4" id="fundTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="imported-tab" data-bs-toggle="tab" data-bs-target="#imported" type="button" role="tab">
+                            <i class="bi bi-database"></i> 我的基金
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab内容 -->
+                <div class="tab-content" id="fundTabContent">
+                    <!-- 已导入基金 Tab -->
+                    <div class="tab-pane fade show active" id="imported" role="tabpanel">
+                        <div id="importedFundSection" class="mt-3">
+                            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                                <!-- 显示方式切换 -->
+                                <div class="btn-group flex-shrink-0">
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="switchDisplayMode('card')">
+                                        <i class="bi bi-grid"></i><span class="d-none d-md-inline"> 卡片</span>
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="switchDisplayMode('list')">
+                                        <i class="bi bi-list"></i><span class="d-none d-md-inline"> 列表</span>
+                                    </button>
+                                </div>
+
+                                <!-- 排序选择 -->
+                                <div class="dropdown flex-shrink-0">
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-sort-down"></i><span class="d-none d-md-inline"> 排序</span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="javascript:void(0);" onclick="sortImportedFunds('profitLoss')">盈亏情况</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);" onclick="sortImportedFunds('gszzl')">估值涨跌幅</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);" onclick="sortImportedFunds('dayProfit')">当日收益</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);" onclick="sortImportedFunds('amount')">持仓金额</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- 金额显示切换 -->
+                                <button class="btn btn-outline-secondary btn-sm flex-shrink-0" id="toggleAmountVisibility" onclick="toggleAmountVisibility()">
+                                    <i class="bi bi-eye"></i><span class="d-none d-md-inline"> 显示金额</span>
+                                </button>
+
+                                <button class="btn btn-outline-primary btn-sm flex-shrink-0" onclick="refreshImportedFunds()">
+                                    <i class="bi bi-arrow-repeat"></i><span class="d-none d-md-inline"> 刷新</span>
+                                </button>
+
+                                <button class="btn btn-outline-success btn-sm flex-shrink-0" onclick="showExportModal()">
+                                    <i class="bi bi-download"></i><span class="d-none d-md-inline"> 导出</span>
+                                </button>
+                                <button class="btn btn-primary btn-sm flex-shrink-0" onclick="showImportModal()">
+                                    <i class="bi bi-upload"></i><span class="d-none d-md-inline"> 导入</span>
+                                </button>
+                                <button class="btn btn-success btn-sm flex-shrink-0" onclick="showAddFundModal()">
+                                    <i class="bi bi-plus-lg"></i><span class="d-none d-md-inline"> 新增</span>
+                                </button>
+                            </div>
+
+                            <div id="importedFundList" class="row">
+                                <div class="col-12 text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">加载中...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">正在加载基金记录...</p>
+                                </div>
+                            </div>
+
+                            <!-- 统计信息 -->
+                            <div class="card mt-4" id="importedStatisticsCard" style="display: none;">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-calculator"></i> 统计</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-6 col-md-3">
+                                            <h5 id="importedTotalAmount" class="text-primary">¥0.00</h5>
+                                            <p class="text-muted mb-0 small">总持仓</p>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <h5 id="importedTotalProfit" class="profit-positive">+¥0.00</h5>
+                                            <p class="text-muted mb-0 small">总盈亏</p>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <h5 id="importedProfitRate" class="profit-positive">+0.00%</h5>
+                                            <p class="text-muted mb-0 small">收益率</p>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <h5 id="importedFundCount" class="text-info">0</h5>
+                                            <p class="text-muted mb-0 small">基金数</p>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center mt-3">
+                                        <div class="col-6">
+                                            <h6 id="importedTotalDayProfit" class="profit-positive">+¥0.00</h6>
+                                            <p class="text-muted mb-0 small">当日收益</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <h6 id="importedTotalYesterdayProfit" class="profit-positive">+¥0.00</h6>
+                                            <p class="text-muted mb-0 small">昨日收益</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 错误提示 -->
+                <div id="errorMessage" class="alert alert-info d-none mt-4" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <span id="errorText"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑模态框 -->
+    <div class="modal fade" id="savedEditFundModal" tabindex="-1" aria-labelledby="savedEditFundModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="savedEditFundModalLabel">编辑基金信息</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="savedEditFundForm">
+                        <input type="hidden" id="savedEditFundId">
+                        <input type="hidden" id="savedEditFundNetValue">
+                        <div class="mb-3">
+                            <label for="savedEditFundName" class="form-label">基金名称</label>
+                            <input type="text" class="form-control" id="savedEditFundName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="savedEditFundCode" class="form-label">基金代码</label>
+                            <input type="text" class="form-control" id="savedEditFundCode" maxlength="6" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="savedEditFundAmount" class="form-label">持有金额</label>
+                            <input type="number" class="form-control" id="savedEditFundAmount" step="0.01" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="savedEditFundShares" class="form-label">持有份额</label>
+                            <input type="number" class="form-control" id="savedEditFundShares" step="0.01" min="0" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="savedEditFundProfitLoss" class="form-label">盈亏金额</label>
+                            <input type="number" class="form-control" id="savedEditFundProfitLoss" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label for="savedEditFundCostPrice" class="form-label">成本价</label>
+                            <input type="number" class="form-control" id="savedEditFundCostPrice" step="0.000001" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveFundChanges()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出模态框 -->
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">导出基金数据</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="exportJsonText" class="form-control" rows="15" readonly></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="copyExportJson()">
+                        <i class="bi bi-clipboard"></i> 复制
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入模态框 -->
+    <div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">导入基金数据</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">请粘贴导出的JSON数据：</p>
+                    <textarea id="importJsonText" class="form-control" rows="15" placeholder="粘贴JSON数据..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmImportJson()">
+                        <i class="bi bi-upload"></i> 导入
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/fundRenderer.js"></script>
+    <script src="js/editModal.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

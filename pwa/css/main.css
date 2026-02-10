@@ -1,0 +1,347 @@
+/* 基金持仓分析系统 - 主样式文件 */
+
+/* ========== CSS变量 ========== */
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --light-bg: #f8f9fa;
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ========== 基础样式 ========== */
+body {
+    background: var(--gradient-primary);
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.container {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* ========== 上传区域 ========== */
+.upload-area {
+    border: 2px dashed #ccc;
+    border-radius: var(--border-radius);
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--light-bg);
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background-color: #e3f2fd;
+    transform: translateY(-2px);
+}
+
+.upload-area.dragover {
+    border-color: var(--primary-color);
+    background-color: #e3f2fd;
+    transform: scale(1.02);
+}
+
+/* ========== 卡片样式 ========== */
+.card {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: var(--box-shadow);
+}
+
+.card-header {
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+    border: none;
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.fund-card {
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: none;
+}
+
+.fund-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+#importedStatisticsCard .card-header {
+    background: var(--gradient-primary);
+}
+
+/* ========== 盈亏颜色 ========== */
+.profit-positive {
+    color: var(--danger-color);
+    font-weight: bold;
+}
+
+.profit-negative {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+/* ========== 按钮样式 ========== */
+.btn {
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-group .btn {
+    border-radius: 8px;
+}
+
+.btn-group .btn:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.btn-group .btn:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* ========== 导航标签 ========== */
+.nav-tabs {
+    border: none;
+    background: var(--light-bg);
+    border-radius: var(--border-radius);
+    padding: 5px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 8px;
+    color: #6c757d;
+    transition: var(--transition);
+}
+
+.nav-tabs .nav-link.active {
+    background: white;
+    color: var(--primary-color);
+    box-shadow: var(--box-shadow);
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* ========== 表格样式 ========== */
+.table-responsive {
+    border-radius: var(--border-radius);
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: var(--box-shadow);
+}
+
+.fund-table {
+    margin-bottom: 0;
+    min-width: 1000px;
+}
+
+.fund-table thead {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.fund-table thead th {
+    border: none;
+    font-weight: 600;
+    padding: 1rem;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.fund-table tbody td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.75rem;
+    white-space: nowrap;
+}
+
+.fund-table tbody td:first-child {
+    text-align: left;
+    max-width: 200px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.fund-table tbody tr {
+    transition: var(--transition);
+}
+
+.fund-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* ========== 加载动画 ========== */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* ========== 响应式设计 ========== */
+@media (max-width: 576px) {
+    body {
+        padding: 10px 0;
+    }
+
+    .container {
+        padding: 15px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .display-4 {
+        font-size: 1.75rem;
+    }
+
+    .lead {
+        font-size: 1rem;
+    }
+
+    .upload-area {
+        padding: 20px;
+    }
+
+    .upload-area h3 {
+        font-size: 1.25rem;
+    }
+
+    .btn-group {
+        flex-direction: row;
+        width: auto;
+    }
+
+    .btn-group .btn {
+        flex: 0 0 auto;
+        font-size: 0.875rem;
+        padding: 0.5rem;
+    }
+
+    .d-flex.gap-2 {
+        flex-wrap: wrap;
+        gap: 0.5rem !important;
+    }
+
+    .d-flex.gap-2 .btn {
+        flex: 0 0 auto;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .d-flex.gap-2 .btn span {
+        display: none;
+    }
+
+    .d-flex.gap-2 .btn i {
+        margin-right: 0 !important;
+    }
+
+    .fund-table {
+        font-size: 0.75rem;
+        min-width: 1400px;
+        font-size: 0.8rem;
+    }
+
+    .fund-table th,
+    .fund-table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.75rem;
+    }
+
+    .fund-table thead th {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .fund-table tbody td {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.8rem;
+    }
+
+    .fund-table .btn-sm {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.7rem;
+    }
+
+    .fund-table .btn-sm i {
+        font-size: 0.9rem;
+    }
+
+    .table-responsive {
+        margin: 0 -15px;
+        border-radius: 0;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+
+    h6 {
+        font-size: 0.875rem;
+    }
+
+    .small {
+        font-size: 0.75rem;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    .fund-table {
+        font-size: 0.875rem;
+        min-width: 1200px;
+    }
+
+    .fund-table th,
+    .fund-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .fund-table thead th {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .fund-table tbody td {
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .fund-table {
+        font-size: 0.9375rem;
+    }
+}
