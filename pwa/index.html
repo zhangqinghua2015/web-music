@@ -43,17 +43,22 @@
                             <div class="d-flex align-items-center gap-1 mb-3 flex-wrap" style="gap: 0.25rem;">
                                 <!-- 显示方式切换 -->
                                 <div class="btn-group flex-shrink-0">
-                                    <button class="btn btn-outline-secondary btn-sm" onclick="switchDisplayMode('card')">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="switchDisplayMode('card')">
                                         <i class="bi bi-grid"></i><span class="d-none d-md-inline"> 卡片</span>
                                     </button>
-                                    <button class="btn btn-outline-secondary btn-sm" onclick="switchDisplayMode('list')">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="switchDisplayMode('list')">
                                         <i class="bi bi-list"></i><span class="d-none d-md-inline"> 列表</span>
                                     </button>
                                 </div>
 
+                                <!-- 金额显示切换 -->
+                                <button class="btn btn-outline-primary btn-sm flex-shrink-0" id="toggleAmountVisibility" onclick="toggleAmountVisibility()">
+                                    <i class="bi bi-eye-slash"></i><span class="d-none d-md-inline"> 隐藏金额</span>
+                                </button>
+
                                 <!-- 排序选择 -->
                                 <div class="dropdown flex-shrink-0">
-                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                         <i class="bi bi-sort-down"></i><span class="d-none d-md-inline"> 排序</span>
                                     </button>
                                     <ul class="dropdown-menu">
@@ -64,22 +69,17 @@
                                     </ul>
                                 </div>
 
-                                <!-- 金额显示切换 -->
-                                <button class="btn btn-outline-secondary btn-sm flex-shrink-0" id="toggleAmountVisibility" onclick="toggleAmountVisibility()">
-                                    <i class="bi bi-eye-slash"></i><span class="d-none d-md-inline"> 隐藏金额</span>
-                                </button>
-
                                 <button class="btn btn-outline-primary btn-sm flex-shrink-0" onclick="refreshImportedFunds()">
                                     <i class="bi bi-arrow-repeat"></i><span class="d-none d-md-inline"> 刷新</span>
                                 </button>
 
-                                <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="showExportModal()">
+                                <button class="btn btn-outline-primary btn-sm flex-shrink-0" onclick="showExportModal()">
                                     <i class="bi bi-download"></i><span class="d-none d-md-inline"> 导出</span>
                                 </button>
-                                <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="showImportModal()">
+                                <button class="btn btn-outline-primary btn-sm flex-shrink-0" onclick="showImportModal()">
                                     <i class="bi bi-upload"></i><span class="d-none d-md-inline"> 导入</span>
                                 </button>
-                                <button class="btn btn-outline-secondary btn-sm flex-shrink-0" onclick="showAddFundModal()">
+                                <button class="btn btn-outline-primary btn-sm flex-shrink-0" onclick="showAddFundModal()">
                                     <i class="bi bi-plus-lg"></i><span class="d-none d-md-inline"> 新增</span>
                                 </button>
                             </div>

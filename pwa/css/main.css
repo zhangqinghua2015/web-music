@@ -127,6 +127,35 @@ body {
     vertical-align: middle !important;
 }
 
+.btn-xs {
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    padding: 0.25rem 0.375rem !important;
+    font-size: 0.75rem !important;
+    min-width: 28px !important;
+    line-height: 1 !important;
+    box-sizing: border-box !important;
+    border-width: 1px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+}
+
+.btn-xs i {
+    font-size: 0.875rem !important;
+    margin: 0 !important;
+}
+
+.btn-xs span {
+    font-size: 0.75rem !important;
+    margin-left: 0.25rem !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+}
+
 .btn-sm i {
     font-size: 1rem !important;
     margin: 0 !important;

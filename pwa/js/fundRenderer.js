@@ -7,7 +7,7 @@ const FundRenderer = {
      */
     createCard(fund, index, isImported = false, isAmountVisible = true) {
         const col = document.createElement('div');
-        col.className = 'col-md-6 col-lg-4 mb-4';
+        col.className = 'col-6 col-md-4 col-lg-3 mb-2';
 
         const isProfit = fund.profitLoss !== null && fund.profitLoss !== undefined && fund.profitLoss >= 0;
         const profitClass = isProfit ? 'profit-positive' : 'profit-negative';
@@ -15,16 +15,16 @@ const FundRenderer = {
 
         col.innerHTML = `
             <div class="card fund-card h-100 shadow-sm">
-                <div class="card-header ${headerBg} text-white">
+                <div class="card-header ${headerBg} text-white" style="padding: 0.5rem; font-size: 0.9rem;">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">${fund.fundName || '未知基金'}</h6>
-                        <span class="badge bg-white text-${isProfit ? 'danger' : 'success'}">
+                        <h6 class="mb-0" style="font-size: 0.9rem;">${fund.fundName || '未知基金'}</h6>
+                        <span class="badge bg-white text-${isProfit ? 'danger' : 'success'}" style="font-size: 0.65rem; padding: 0.25rem 0.5rem;">
                             ${fund.fundCode || '----'}
                         </span>
                     </div>
-                    ${isImported ? '<div class="small mt-1"><i class="bi bi-check-circle-fill"></i> 已导入记录</div>' : ''}
+                    ${isImported ? '<div style="font-size: 0.75rem; margin-top: 0.25rem;"><i class="bi bi-check-circle-fill"></i> 已导入</div>' : ''}
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="padding: 0.5rem;">
                     ${this.renderCardBody(fund, isImported, isAmountVisible, profitClass)}
                     ${this.renderValuationInfo(fund, isImported, isAmountVisible)}
                     ${this.renderCardButtons(fund, index, isImported)}
@@ -42,29 +42,29 @@ const FundRenderer = {
         const showAmount = !isImported || isAmountVisible;
 
         return `
-            <div class="mb-3">
-                <small class="text-muted">持仓金额</small>
-                <h5 class="mb-0">${showAmount ? '¥' + formatNumber(fund.amount) : '****.**'}</h5>
+            <div class="mb-1">
+                <small class="text-muted" style="font-size: 0.7rem;">持仓金额</small>
+                <h6 class="mb-0" style="font-size: 0.85rem;">${showAmount ? '¥' + formatNumber(fund.amount) : '****.**'}</h6>
             </div>
-            <div class="mb-3">
-                <small class="text-muted">盈亏情况</small>
-                <h5 class="${profitClass} mb-0">
+            <div class="mb-1">
+                <small class="text-muted" style="font-size: 0.7rem;">盈亏情况</small>
+                <h6 class="${profitClass} mb-0" style="font-size: 0.85rem;">
                     ${showAmount ? this.formatProfitLoss(fund) : '****.**'}
-                </h5>
+                </h6>
             </div>
-            <div class="mb-3">
-                <small class="text-muted">昨日收益</small>
-                <p class="mb-0 ${fund.yesterdayProfit >= 0 ? 'text-danger' : 'text-success'}">
+            <div class="mb-1">
+                <small class="text-muted" style="font-size: 0.7rem;">昨日收益</small>
+                <p class="mb-0" style="font-size: 0.85rem; ${fund.yesterdayProfit >= 0 ? 'color: #dc3545;' : 'color: #198754;'}">
                     ${showAmount ? this.formatYesterdayProfit(fund) : '****.**'}
                 </p>
             </div>
-            <div class="mb-3">
-                <small class="text-muted">当前净值 (${fund.jzrq || '--'})</small>
-                <p class="mb-0">${fund.netValue || '--'}</p>
+            <div class="mb-1">
+                <small class="text-muted" style="font-size: 0.7rem;">当前净值 (${fund.jzrq || '--'})</small>
+                <p class="mb-0" style="font-size: 0.85rem;">${fund.netValue || '--'}</p>
             </div>
-            <div class="mb-2">
-                <small class="text-muted">持仓份额</small>
-                <p class="mb-0">${showAmount ? (fund.shares ? formatNumber(fund.shares) : '--') : '****.**'}</p>
+            <div>
+                <small class="text-muted" style="font-size: 0.7rem;">持仓份额</small>
+                <p class="mb-0" style="font-size: 0.85rem;">${showAmount ? (fund.shares ? formatNumber(fund.shares) : '--') : '****.**'}</p>
             </div>
         `;
     },
@@ -80,35 +80,35 @@ const FundRenderer = {
             const dayProfitClass = fund.dayProfit !== null ? (fund.dayProfit >= 0 ? 'profit-positive' : 'profit-negative') : '';
 
             return `
-                <div class="mt-3 pt-3 border-top">
+                <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #dee2e6;">
                     <div class="mb-1">
-                        <small class="text-muted">实时估值</small>
-                        <p class="mb-0 font-weight-bold">${fund.gsz}</p>
+                        <small class="text-muted" style="font-size: 0.7rem;">实时估值</small>
+                        <p class="mb-0" style="font-size: 0.85rem; font-weight: bold;">${fund.gsz}</p>
                     </div>
                     <div class="mb-1">
-                        <small class="text-muted">估值涨跌幅</small>
-                        <p class="mb-0 ${gszzlClass}">
+                        <small class="text-muted" style="font-size: 0.7rem;">估值涨跌幅</small>
+                        <p class="mb-0 ${gszzlClass}" style="font-size: 0.85rem;">
                             ${fund.gszzl !== null ? (parseFloat(fund.gszzl) >= 0 ? '+' : '') + fund.gszzl + '%' : '--'}
                         </p>
                     </div>
                     <div class="mb-1">
-                        <small class="text-muted">当日收益（估值）</small>
-                        <p class="mb-0 ${dayProfitClass}">
+                        <small class="text-muted" style="font-size: 0.7rem;">当日收益</small>
+                        <p class="mb-0 ${dayProfitClass}" style="font-size: 0.85rem;">
                             ${showAmount ? this.formatDayProfit(fund) : '****.**'}
                         </p>
                     </div>
                     <div>
-                        <small class="text-muted">
-                            <i class="bi bi-clock"></i> 估值时间: ${fund.gztime || '--'}
+                        <small class="text-muted" style="font-size: 0.7rem;">
+                            <i class="bi bi-clock" style="font-size: 0.65rem; margin-right: 0.25rem;"></i>${fund.gztime || '--'}
                         </small>
                     </div>
                 </div>
             `;
         } else if (fund.updateTime) {
             return `
-                <div class="mt-3 pt-3 border-top">
+                <div class="mt-2 pt-2 border-top">
                     <small class="text-muted">
-                        <i class="bi bi-clock"></i> 更新时间: ${fund.updateTime}
+                        <i class="bi bi-clock"></i> ${fund.updateTime}
                     </small>
                 </div>
             `;
@@ -122,20 +122,20 @@ const FundRenderer = {
     renderCardButtons(fund, index, isImported) {
         if (isImported) {
             return `
-                <div class="mt-3 d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-1" onclick="showSavedEditForm('${fund.fundCode}', '${fund.fundName}', '${fund.fundCode || ''}', ${fund.amount}, ${fund.shares}, ${fund.netValue}, ${fund.profitLoss}, ${fund.costPrice})">
-                        <i class="bi bi-pencil"></i> 编辑
+                <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem;">
+                    <button class="btn btn-xs btn-outline-primary flex-1" onclick="showSavedEditForm('${fund.fundCode}', '${fund.fundName}', '${fund.fundCode || ''}', ${fund.amount}, ${fund.shares}, ${fund.netValue}, ${fund.profitLoss}, ${fund.costPrice})">
+                        <i class="bi bi-pencil"></i> <span class="d-none d-md-inline">编辑</span>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger flex-1" onclick="deleteFund('${fund.fundCode}', '${fund.fundName}')">
-                        <i class="bi bi-trash"></i> 删除
+                    <button class="btn btn-xs btn-outline-danger flex-1" onclick="deleteFund('${fund.fundCode}', '${fund.fundName}')">
+                        <i class="bi bi-trash"></i> <span class="d-none d-md-inline">删除</span>
                     </button>
                 </div>
             `;
         } else {
             return `
-                <div class="mt-3 d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-1" onclick="showImportEditForm(${index}, '${fund.fundName}', '${fund.fundCode || ''}', ${fund.amount}, ${fund.shares}, ${fund.netValue}, ${fund.profitLoss}, ${fund.costPrice})">
-                        <i class="bi bi-pencil"></i> 编辑
+                <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem;">
+                    <button class="btn btn-xs btn-outline-primary flex-1" onclick="showImportEditForm(${index}, '${fund.fundName}', '${fund.fundCode || ''}', ${fund.amount}, ${fund.shares}, ${fund.netValue}, ${fund.profitLoss}, ${fund.costPrice})">
+                        <i class="bi bi-pencil"></i> <span class="d-none d-md-inline">编辑</span>
                     </button>
                 </div>
             `;
@@ -147,8 +147,14 @@ const FundRenderer = {
      */
     formatProfitLoss(fund) {
         const sign = fund.profitLoss >= 0 ? '+' : '';
-        const rateSign = fund.profitLossRate >= 0 ? '+' : '';
-        return `${sign}${formatNumber(fund.profitLoss)} (${rateSign}${formatNumber(fund.profitLossRate)}%)`;
+        let rate = 0;
+        // 计算公式：profitLoss / (costPrice * shares) * 100
+        const costTotal = parseFloat(fund.costPrice) * parseFloat(fund.shares);
+        if (costTotal > 0) {
+            rate = (parseFloat(fund.profitLoss) / costTotal) * 100;
+        }
+        const rateSign = rate >= 0 ? '+' : '';
+        return `${sign}${formatNumber(fund.profitLoss)} (${rateSign}${formatNumber(rate)}%)`;
     },
 
     /**

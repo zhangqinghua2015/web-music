@@ -290,24 +290,24 @@
     // ========== 显示方式切换 ==========
     window.switchDisplayMode = function(mode) {
         if (mode !== 'card' && mode !== 'list') return;
-    
+
         currentDisplayMode = mode;
-    
+
         const cardBtn = document.querySelector('button[onclick="switchDisplayMode(\'card\')"]');
         const listBtn = document.querySelector('button[onclick="switchDisplayMode(\'list\')"]');
-    
+
         if (mode === 'card') {
-            cardBtn.classList.remove('btn-outline-secondary');
-            cardBtn.classList.add('btn-secondary');
-            listBtn.classList.remove('btn-secondary');
-            listBtn.classList.add('btn-outline-secondary');
+            cardBtn.classList.remove('btn-outline-primary');
+            cardBtn.classList.add('btn-primary');
+            listBtn.classList.remove('btn-primary');
+            listBtn.classList.add('btn-outline-primary');
         } else {
-            listBtn.classList.remove('btn-outline-secondary');
-            listBtn.classList.add('btn-secondary');
-            cardBtn.classList.remove('btn-secondary');
-            cardBtn.classList.add('btn-outline-secondary');
+            listBtn.classList.remove('btn-outline-primary');
+            listBtn.classList.add('btn-primary');
+            cardBtn.classList.remove('btn-primary');
+            cardBtn.classList.add('btn-outline-primary');
         }
-    
+
         renderImportedFunds();
     };
 
@@ -355,8 +355,12 @@
         const toggleBtn = document.getElementById('toggleAmountVisibility');
         if (isAmountVisible) {
             toggleBtn.innerHTML = '<i class="bi bi-eye"></i><span class="d-none d-md-inline"> 显示金额</span>';
+            toggleBtn.classList.remove('btn-primary');
+            toggleBtn.classList.add('btn-outline-primary');
         } else {
             toggleBtn.innerHTML = '<i class="bi bi-eye-slash"></i><span class="d-none d-md-inline"> 隐藏金额</span>';
+            toggleBtn.classList.remove('btn-outline-primary');
+            toggleBtn.classList.add('btn-primary');
         }
 
         renderImportedFunds();
@@ -435,6 +439,14 @@
             await FundDB.cleanOldHistory(30);
         } catch (error) {
             showError('数据库初始化失败: ' + error.message);
+        }
+
+        // 初始化金额显示按钮（默认隐藏）
+        const toggleBtn = document.getElementById('toggleAmountVisibility');
+        if (toggleBtn) {
+            toggleBtn.innerHTML = '<i class="bi bi-eye-slash"></i><span class="d-none d-md-inline"> 隐藏金额</span>';
+            toggleBtn.classList.remove('btn-outline-primary');
+            toggleBtn.classList.add('btn-primary');
         }
 
         // 加载已导入基金
