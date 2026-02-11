@@ -469,6 +469,11 @@ body {
         border-radius: 0;
     }
 
+    .col-12 .table-responsive {
+        margin: 0;
+        border-radius: var(--border-radius);
+    }
+
     .card-body {
         padding: 1rem;
     }

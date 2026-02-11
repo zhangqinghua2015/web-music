@@ -184,13 +184,15 @@ const FundRenderer = {
 
         const tableWrapper = document.createElement('div');
         tableWrapper.className = 'table-responsive';
+        tableWrapper.style.maxHeight = 'calc(100vh - 300px)';
+        tableWrapper.style.overflowY = 'auto';
 
         const table = document.createElement('table');
         table.className = 'table table-hover fund-table mb-0';
         table.style.minWidth = '1000px';
 
         table.innerHTML = `
-            <thead>
+            <thead style="position: sticky; top: 0; z-index: 10;">
                 <tr>
                     <th style="min-width: 150px;">基金名称</th>
                     <th style="min-width: 80px;">代码</th>
