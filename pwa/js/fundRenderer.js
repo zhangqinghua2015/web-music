@@ -123,10 +123,10 @@ const FundRenderer = {
         if (isImported) {
             return `
                 <div class="mt-3 d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-1" onclick="showSavedEditForm(${fund.id}, '${fund.fundName}', '${fund.fundCode || ''}', ${fund.amount}, ${fund.shares}, ${fund.netValue}, ${fund.profitLoss}, ${fund.costPrice})">
+                    <button class="btn btn-sm btn-outline-primary flex-1" onclick="showSavedEditForm('${fund.fundCode}', '${fund.fundName}', '${fund.fundCode || ''}', ${fund.amount}, ${fund.shares}, ${fund.netValue}, ${fund.profitLoss}, ${fund.costPrice})">
                         <i class="bi bi-pencil"></i> 编辑
                     </button>
-                    <button class="btn btn-sm btn-outline-danger flex-1" onclick="deleteFund(${fund.id}, '${fund.fundName}')">
+                    <button class="btn btn-sm btn-outline-danger flex-1" onclick="deleteFund('${fund.fundCode}', '${fund.fundName}')">
                         <i class="bi bi-trash"></i> 删除
                     </button>
                 </div>
@@ -244,10 +244,10 @@ const FundRenderer = {
                 </td>
                 <td>
                     <div class="d-flex gap-1 justify-content-center" style="white-space: nowrap;">
-                        <button class="btn btn-sm btn-outline-primary" onclick="showSavedEditForm(${fund.id}, '${fund.fundName}', '${fund.fundCode || ''}', ${fund.amount}, ${fund.shares}, ${fund.netValue}, ${fund.profitLoss}, ${fund.costPrice})">
+                        <button class="btn btn-sm btn-outline-primary" onclick="showSavedEditForm('${fund.fundCode}', '${fund.fundName}', '${fund.fundCode || ''}', ${fund.amount}, ${fund.shares}, ${fund.netValue}, ${fund.profitLoss}, ${fund.costPrice})">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteFund(${fund.id}, '${fund.fundName}')">
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteFund('${fund.fundCode}', '${fund.fundName}')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>

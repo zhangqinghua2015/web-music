@@ -47,7 +47,7 @@ class FundEditModal {
         if (this.isImportMode) {
             this.setValue('Index', fundData.index);
         } else {
-            this.setValue('Id', fundData.id);
+            this.setValue('Code', fundData.fundCode);
         }
         this.setValue('Name', fundData.fundName);
         this.setValue('Code', fundData.fundCode);
@@ -270,7 +270,8 @@ function initEditModals() {
         prefix: 'savedEdit',
         isImportMode: false,
         onSave: async (formData, originalData) => {
-            await FundApi.updatePosition(originalData.id, formData);
+            // 使用 fundCode 而不是 id
+            await FundApi.updatePosition(originalData.fundCode, formData);
             refreshImportedFunds();
         }
     });
@@ -298,12 +299,12 @@ function showImportEditForm(index, name, code, amount, shares, netValue, profitL
 /**
  * 显示已保存基金编辑表单（兼容旧代码）
  */
-function showSavedEditForm(id, name, code, amount, shares, netValue, profitLoss, costPrice) {
+function showSavedEditForm(fundCode, name, code, amount, shares, netValue, profitLoss, costPrice) {
     if (!savedEditModal) {
         initEditModals();
     }
     savedEditModal.show({
-        id,
+        fundCode,
         fundName: name,
         fundCode: code,
         amount,

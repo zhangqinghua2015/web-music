@@ -113,13 +113,13 @@
         loadImportedFunds();
     };
 
-    window.deleteFund = async function(id, name) {
+    window.deleteFund = async function(fundCode, name) {
         if (!confirm(`确定要删除基金 "${name}" 吗？`)) {
             return;
         }
 
         try {
-            await FundApi.deletePosition(id);
+            await FundApi.deletePosition(fundCode);
             showError('基金记录删除成功');
             refreshImportedFunds();
         } catch (error) {

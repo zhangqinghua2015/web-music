@@ -4,7 +4,7 @@
 const FundDB = {
     db: null,
     DB_NAME: 'FundAppDB',
-    DB_VERSION: 2,
+    DB_VERSION: 3,
 
     async init() {
         if (this.db) return;
@@ -22,11 +22,15 @@ const FundDB = {
 
             request.onupgradeneeded = (e) => {
                 const db = e.target.result;
+                const oldVersion = e.oldVersion;
 
                 // 基金持仓表
                 if (!db.objectStoreNames.contains('positions')) {
-                    const store = db.createObjectStore('positions', { keyPath: 'id', autoIncrement: true });
-                    store.createIndex('fundCode', 'fundCode', { unique: false });
+                    db.createObjectStore('positions', { keyPath: 'fundCode' });
+                } else if (oldVersion < 3) {
+                    // 从 v2 升级到 v3：改为以 fundCode 为主键
+                    db.deleteObjectStore('positions');
+                    db.createObjectStore('positions', { keyPath: 'fundCode' });
                 }
 
                 // 基金信息缓存表
@@ -64,13 +68,17 @@ const FundDB = {
 
     async savePosition(position) {
         await this.init();
+        // 确保 fundCode 存在
+        if (!position.fundCode) {
+            throw new Error('基金代码不能为空');
+        }
+
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction('positions', 'readwrite');
             const store = tx.objectStore('positions');
-
-            // 如果没有 id，则新增；有 id 则更新
+            // 使用 put 会自动更新相同 fundCode 的记录
             const request = store.put(position);
-            request.onsuccess = () => resolve(request.result);
+            request.onsuccess = () => resolve(position.fundCode);
             request.onerror = () => reject(request.error);
         });
     },
@@ -79,27 +87,27 @@ const FundDB = {
         await this.init();
         const results = [];
         for (const pos of positions) {
-            const id = await this.savePosition(pos);
-            results.push(id);
+            const fundCode = await this.savePosition(pos);
+            results.push(fundCode);
         }
         return results;
     },
 
-    async deletePosition(id) {
+    async deletePosition(fundCode) {
         await this.init();
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction('positions', 'readwrite');
-            const request = tx.objectStore('positions').delete(id);
+            const request = tx.objectStore('positions').delete(fundCode);
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
         });
     },
 
-    async getPosition(id) {
+    async getPosition(fundCode) {
         await this.init();
         return new Promise((resolve, reject) => {
             const tx = this.db.transaction('positions', 'readonly');
-            const request = tx.objectStore('positions').get(id);
+            const request = tx.objectStore('positions').get(fundCode);
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });

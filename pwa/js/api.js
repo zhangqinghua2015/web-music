@@ -44,11 +44,11 @@ const FundApi = {
     /**
      * 更新基金持仓
      */
-    async updatePosition(id, data) {
-        const existing = await FundDB.getPosition(id);
+    async updatePosition(fundCode, data) {
+        const existing = await FundDB.getPosition(fundCode);
         if (!existing) throw new Error('基金记录不存在');
 
-        const updated = { ...existing, ...data, id };
+        const updated = { ...existing, ...data, fundCode };
         await FundDB.savePosition(updated);
         return updated;
     },
