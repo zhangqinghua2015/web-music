@@ -176,5 +176,24 @@ const FundDB = {
             tx.oncomplete = () => resolve();
             tx.onerror = () => reject(tx.error);
         });
+    },
+
+    async deleteHistoryCache(fundCode) {
+        await this.init();
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction('historyCache', 'readwrite');
+            const store = tx.objectStore('historyCache');
+            const index = store.index('fundCode');
+            const request = index.openCursor(fundCode);
+            request.onsuccess = (e) => {
+                const cursor = e.target.result;
+                if (cursor) {
+                    cursor.delete();
+                    cursor.continue();
+                }
+            };
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
     }
 };

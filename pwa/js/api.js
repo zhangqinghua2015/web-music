@@ -148,6 +148,8 @@ const FundApi = {
 
             // 保存到缓存
             if (history.length > 0) {
+                // 清除旧数据，保存新数据
+                await FundDB.deleteHistoryCache(fundCode);
                 await FundDB.saveHistoryCache(fundCode, history);
                 sessionStorage.setItem(cacheKey, '1');
             }

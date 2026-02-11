@@ -372,9 +372,9 @@
         const exportData = importedFundsData.map(fund => ({
             fundName: fund.fundName,
             fundCode: fund.fundCode,
-            amount: fund.amount,
+            amount: parseFloat(fund.amount).toFixed(2),
             shares: fund.shares,
-            profitLoss: fund.profitLoss,
+            profitLoss: parseFloat(fund.profitLoss).toFixed(2),
             costPrice: fund.costPrice,
             netValue: fund.netValue
         }));
