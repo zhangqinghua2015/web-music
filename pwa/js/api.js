@@ -10,9 +10,9 @@ const FundApi = {
     ],
 
     /**
-     * 带重试的 fetch
+     * 带重试的 fetch（优化：减少重试次数，添加延迟）
      */
-    async fetchWithRetry(url, maxRetries = 2) {
+    async fetchWithRetry(url, maxRetries = 1) {
         for (let proxyIndex = 0; proxyIndex < this.CORS_PROXIES.length; proxyIndex++) {
             const proxy = this.CORS_PROXIES[proxyIndex];
             for (let retry = 0; retry <= maxRetries; retry++) {
@@ -21,6 +21,10 @@ const FundApi = {
                     if (response.ok) return response;
                 } catch (e) {
                     if (retry === maxRetries && proxyIndex === this.CORS_PROXIES.length - 1) throw e;
+                    // 添加重试延迟：第一次 500ms，第二次 1000ms
+                    if (retry < maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, 500 * (retry + 1)));
+                    }
                 }
             }
         }
@@ -95,10 +99,25 @@ const FundApi = {
     },
 
     /**
-     * 获取基金估值
+     * 获取基金估值（优化：添加缓存）
      */
     async getValuation(fundCode) {
         if (!fundCode) return null;
+
+        // 检查缓存（10秒有效期）
+        const cacheKey = `valuation_${fundCode}`;
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
+            try {
+                const { data, timestamp } = JSON.parse(cached);
+                const age = Date.now() - timestamp;
+                if (age < 10 * 1000) { // 10秒
+                    return data;
+                }
+            } catch (e) {
+                // 缓存解析失败，继续请求
+            }
+        }
 
         try {
             const url = `https://fundgz.1234567.com.cn/js/${fundCode}.js?rt=${Date.now()}`;
@@ -108,7 +127,13 @@ const FundApi = {
             // 解析 JSONP: jsonpgz({...})
             const match = text.match(/jsonpgz\((.+)\)/);
             if (match) {
-                return JSON.parse(match[1]);
+                const data = JSON.parse(match[1]);
+                // 保存到缓存
+                sessionStorage.setItem(cacheKey, JSON.stringify({
+                    data: data,
+                    timestamp: Date.now()
+                }));
+                return data;
             }
         } catch (e) {
             console.error('获取估值失败:', fundCode, e);
@@ -186,6 +211,14 @@ const FundApi = {
 
                     if (valuation.dwjz) {
                         pos.netValue = parseFloat(valuation.dwjz);
+                    }
+
+                    // 重新计算持仓金额和盈亏金额
+                    if (pos.shares && pos.netValue) {
+                        pos.amount = parseFloat((pos.shares * pos.netValue).toFixed(2));
+                        if (pos.costPrice) {
+                            pos.profitLoss = parseFloat(((pos.netValue - pos.costPrice) * pos.shares).toFixed(2));
+                        }
                     }
 
                     // 计算当日收益

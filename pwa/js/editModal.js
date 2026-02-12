@@ -66,7 +66,7 @@ class FundEditModal {
     }
 
     /**
-     * 绑定表单事件
+     * 绑定表单事件（优化：添加防抖）
      */
     bindEvents() {
         const amountInput = this.getElement('Amount');
@@ -84,43 +84,48 @@ class FundEditModal {
             profitLossInput.oninput = () => this.recalculate();
         }
 
-        // 基金名称变化时搜索代码
+        // 基金名称变化时搜索代码（添加防抖）
         if (nameInput) {
-            nameInput.oninput = () => {
-                const name = nameInput.value.trim();
+            const debouncedSearch = Utils.debounce((name) => {
                 if (name.length > 1) {
                     this.searchByName(name);
                 }
+            }, 300);
+
+            nameInput.oninput = () => {
+                const name = nameInput.value.trim();
+                debouncedSearch(name);
             };
         }
 
-        // 基金代码变化时搜索名称
+        // 基金代码变化时搜索名称（添加防抖）
         if (codeInput) {
-            codeInput.oninput = () => {
-                const code = codeInput.value.trim();
+            const debouncedSearch = Utils.debounce((code) => {
                 if (code.length === 6) {
                     this.searchByCode(code);
                 }
+            }, 300);
+
+            codeInput.oninput = () => {
+                const code = codeInput.value.trim();
+                debouncedSearch(code);
             };
         }
     }
 
     /**
-     * 重新计算份额和成本价
+     * 重新计算份额和成本价（优化：使用共享计算函数）
      */
     recalculate() {
         const amount = parseFloat(this.getValue('Amount'));
         const netValue = parseFloat(this.getValue('NetValue'));
         const profitLoss = parseFloat(this.getValue('ProfitLoss')) || 0;
 
-        if (!isNaN(amount) && !isNaN(netValue) && netValue > 0) {
-            const shares = amount / netValue;
-            this.setValue('Shares', shares.toFixed(2));
+        const result = Utils.calculateFundShares(amount, netValue, profitLoss);
 
-            if (shares > 0) {
-                const costPrice = (amount - profitLoss) / shares;
-                this.setValue('CostPrice', costPrice.toFixed(6));
-            }
+        if (result.shares !== null) {
+            this.setValue('Shares', result.shares.toFixed(2));
+            this.setValue('CostPrice', result.costPrice.toFixed(6));
         } else {
             this.setValue('Shares', '');
             this.setValue('CostPrice', '');
@@ -159,17 +164,34 @@ class FundEditModal {
     }
 
     /**
-     * 获取基金估值并计算
+     * 获取基金估值并计算（优化：添加加载状态和错误提示）
      */
     async fetchValuation(fundCode) {
+        const netValueInput = this.getElement('NetValue');
+
+        // 添加加载状态
+        if (netValueInput) {
+            netValueInput.disabled = true;
+            netValueInput.placeholder = '加载中...';
+        }
+
         try {
             const valuation = await FundApi.getValuation(fundCode);
             if (valuation && valuation.dwjz) {
                 this.setValue('NetValue', valuation.dwjz);
                 this.recalculate();
+            } else {
+                Utils.showError('未能获取基金估值数据');
             }
         } catch (error) {
             console.error('获取基金估值失败:', error);
+            Utils.showError('获取基金估值失败，请稍后重试');
+        } finally {
+            // 恢复输入框状态
+            if (netValueInput) {
+                netValueInput.disabled = false;
+                netValueInput.placeholder = '';
+            }
         }
     }
 

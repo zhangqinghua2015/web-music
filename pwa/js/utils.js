@@ -86,6 +86,58 @@ const Utils = {
         if (!amount || !shares || shares <= 0) return null;
         const loss = profitLoss || 0;
         return (amount - loss) / shares;
+    },
+
+    /**
+     * 防抖函数 - 延迟执行，多次调用只执行最后一次
+     */
+    debounce(func, delay = 300) {
+        let timeoutId;
+        return function(...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    },
+
+    /**
+     * 节流函数 - 限制执行频率
+     */
+    throttle(func, delay = 300) {
+        let lastCall = 0;
+        let timeoutId;
+        return function(...args) {
+            const now = Date.now();
+            const timeSinceLastCall = now - lastCall;
+
+            clearTimeout(timeoutId);
+
+            if (timeSinceLastCall >= delay) {
+                lastCall = now;
+                func.apply(this, args);
+            } else {
+                timeoutId = setTimeout(() => {
+                    lastCall = Date.now();
+                    func.apply(this, args);
+                }, delay - timeSinceLastCall);
+            }
+        };
+    },
+
+    /**
+     * 计算基金份额和成本价（合并计算逻辑）
+     */
+    calculateFundShares(amount, netValue, profitLoss = 0) {
+        if (!amount || !netValue || netValue <= 0) {
+            return { shares: null, costPrice: null };
+        }
+
+        const shares = amount / netValue;
+        const costPrice = shares > 0 ? (amount - profitLoss) / shares : null;
+
+        return {
+            shares: shares,
+            costPrice: costPrice
+        };
     }
 };
 

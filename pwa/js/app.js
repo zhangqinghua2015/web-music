@@ -45,7 +45,7 @@
     window.renderImportedFunds = function() {
         console.log('renderImportedFunds 开始执行');
         console.log('importedFundsData:', importedFundsData);
-        
+
         const fundList = document.getElementById('importedFundList');
         const statisticsCard = document.getElementById('importedStatisticsCard');
 
@@ -53,7 +53,7 @@
             console.log('正在加载中，跳过渲染');
             return;
         }
-        
+
         if (!importedFundsData || importedFundsData.length === 0) {
             console.log('没有基金数据，显示空状态');
             fundList.innerHTML = `
@@ -66,7 +66,7 @@
             statisticsCard.style.display = 'none';
             return;
         }
-        
+
         console.log('有基金数据，开始渲染');
 
         let sortedFunds = [...importedFundsData];
@@ -74,18 +74,21 @@
             sortedFunds = sortFunds(sortedFunds, currentSortField, currentSortOrder);
         }
 
-        fundList.innerHTML = '';
+        // 使用 requestAnimationFrame 优化 DOM 更新
+        requestAnimationFrame(() => {
+            fundList.innerHTML = '';
 
-        if (currentDisplayMode === 'card') {
-            sortedFunds.forEach((fund, index) => {
-                fundList.appendChild(createFundCard(fund, index, true));
-            });
-        } else {
-            fundList.appendChild(createFundListView(sortedFunds));
-        }
+            if (currentDisplayMode === 'card') {
+                sortedFunds.forEach((fund, index) => {
+                    fundList.appendChild(createFundCard(fund, index, true));
+                });
+            } else {
+                fundList.appendChild(createFundListView(sortedFunds));
+            }
 
-        updateImportedStatistics(importedFundsData);
-        statisticsCard.style.display = 'block';
+            updateImportedStatistics(importedFundsData);
+            statisticsCard.style.display = 'block';
+        });
     };
 
     window.showImportedFundsError = function(message) {
@@ -163,18 +166,27 @@
         amountInput.oninput = recalculateAddForm;
         profitLossInput.oninput = recalculateAddForm;
 
-        nameInput.oninput = function() {
-            const name = this.value.trim();
+        // 添加防抖的搜索
+        const debouncedNameSearch = Utils.debounce((name) => {
             if (name.length > 1) {
                 searchFundByNameForAdd(name);
             }
+        }, 300);
+
+        const debouncedCodeSearch = Utils.debounce((code) => {
+            if (code.length === 6) {
+                searchFundByCodeForAdd(code);
+            }
+        }, 300);
+
+        nameInput.oninput = function() {
+            const name = this.value.trim();
+            debouncedNameSearch(name);
         };
 
         codeInput.oninput = function() {
             const code = this.value.trim();
-            if (code.length === 6) {
-                searchFundByCodeForAdd(code);
-            }
+            debouncedCodeSearch(code);
         };
     }
 
@@ -183,13 +195,11 @@
         const netValue = parseFloat(document.getElementById('savedEditFundNetValue').value);
         const profitLoss = parseFloat(document.getElementById('savedEditFundProfitLoss').value) || 0;
 
-        if (!isNaN(amount) && !isNaN(netValue) && netValue > 0) {
-            const shares = amount / netValue;
-            document.getElementById('savedEditFundShares').value = shares.toFixed(2);
-            if (shares > 0) {
-                const costPrice = (amount - profitLoss) / shares;
-                document.getElementById('savedEditFundCostPrice').value = costPrice.toFixed(6);
-            }
+        const result = Utils.calculateFundShares(amount, netValue, profitLoss);
+
+        if (result.shares !== null) {
+            document.getElementById('savedEditFundShares').value = result.shares.toFixed(2);
+            document.getElementById('savedEditFundCostPrice').value = result.costPrice.toFixed(6);
         }
     }
 
@@ -214,13 +224,31 @@
     }
 
     async function fetchValuationForAdd(code) {
+        const netValueInput = document.getElementById('savedEditFundNetValue');
+
+        // 添加加载状态
+        if (netValueInput) {
+            netValueInput.disabled = true;
+            netValueInput.placeholder = '加载中...';
+        }
+
         try {
             const valuation = await FundApi.getValuation(code);
             if (valuation && valuation.dwjz) {
                 document.getElementById('savedEditFundNetValue').value = valuation.dwjz;
                 recalculateAddForm();
+            } else {
+                Utils.showError('未能获取基金估值数据');
             }
-        } catch (e) {}
+        } catch (e) {
+            Utils.showError('获取基金估值失败，请稍后重试');
+        } finally {
+            // 恢复输入框状态
+            if (netValueInput) {
+                netValueInput.disabled = false;
+                netValueInput.placeholder = '';
+            }
+        }
     }
 
     async function saveNewFund() {
