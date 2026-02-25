@@ -9,6 +9,9 @@ const FundDB = {
     async init() {
         if (this.db) return;
 
+        // 请求持久化存储权限，防止数据被浏览器清理
+        await this.requestPersistentStorage();
+
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
 
@@ -45,6 +48,31 @@ const FundDB = {
                 }
             };
         });
+    },
+
+    /**
+     * 请求持久化存储权限
+     */
+    async requestPersistentStorage() {
+        if (navigator.storage && navigator.storage.persist) {
+            try {
+                const isPersisted = await navigator.storage.persisted();
+                console.log('当前存储是否持久化:', isPersisted);
+
+                if (!isPersisted) {
+                    const result = await navigator.storage.persist();
+                    console.log('请求持久化存储:', result ? '成功' : '失败');
+
+                    if (!result) {
+                        console.warn('浏览器拒绝了持久化存储请求，数据可能会被清理');
+                    }
+                }
+            } catch (error) {
+                console.warn('持久化存储 API 不支持或出错:', error);
+            }
+        } else {
+            console.warn('浏览器不支持持久化存储 API');
+        }
     },
 
     // ========== 持仓操作 ==========
