@@ -10,6 +10,7 @@ class FundEditModal {
         this.onSave = options.onSave || (() => {});
         this.modal = null;
         this.fundData = null;
+        this.originalFundCode = null; // 保存原始基金代码
     }
 
     /**
@@ -42,6 +43,7 @@ class FundEditModal {
      */
     show(fundData) {
         this.fundData = fundData;
+        this.originalFundCode = fundData.fundCode; // 保存原始基金代码
 
         // 填充表单数据
         if (this.isImportMode) {
@@ -253,7 +255,7 @@ class FundEditModal {
         const formData = this.getFormData();
 
         try {
-            await this.onSave(formData, this.fundData);
+            await this.onSave(formData, this.fundData, this.originalFundCode);
             this.hide();
             return true;
         } catch (error) {
@@ -291,9 +293,9 @@ function initEditModals() {
     savedEditModal = new FundEditModal('savedEditFundModal', {
         prefix: 'savedEdit',
         isImportMode: false,
-        onSave: async (formData, originalData) => {
-            // 使用 fundCode 而不是 id
-            await FundApi.updatePosition(originalData.fundCode, formData);
+        onSave: async (formData, originalData, originalFundCode) => {
+            // 使用保存的原始基金代码，而不是 originalData.fundCode
+            await FundApi.updatePosition(originalFundCode, formData);
             refreshImportedFunds();
         }
     });
@@ -321,12 +323,11 @@ function showImportEditForm(index, name, code, amount, shares, netValue, profitL
 /**
  * 显示已保存基金编辑表单（兼容旧代码）
  */
-function showSavedEditForm(fundCode, name, code, amount, shares, netValue, profitLoss, costPrice) {
+function showSavedEditForm(name, code, amount, shares, netValue, profitLoss, costPrice) {
     if (!savedEditModal) {
         initEditModals();
     }
     savedEditModal.show({
-        fundCode,
         fundName: name,
         fundCode: code,
         amount,

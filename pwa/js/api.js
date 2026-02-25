@@ -52,6 +52,17 @@ const FundApi = {
         const existing = await FundDB.getPosition(fundCode);
         if (!existing) throw new Error('基金记录不存在');
 
+        // 检查基金代码是否被修改
+        const newFundCode = data.fundCode || fundCode;
+        if (newFundCode !== fundCode) {
+            // 基金代码变更：删除旧记录，创建新记录
+            await FundDB.deletePosition(existing.fundCode);
+            const newPosition = { ...existing, ...data, fundCode: newFundCode };
+            await FundDB.savePosition(newPosition);
+            return newPosition;
+        }
+
+        // 基金代码未变更：正常更新
         const updated = { ...existing, ...data, fundCode };
         await FundDB.savePosition(updated);
         return updated;
@@ -60,8 +71,8 @@ const FundApi = {
     /**
      * 删除基金持仓
      */
-    async deletePosition(id) {
-        await FundDB.deletePosition(id);
+    async deletePosition(fundCode) {
+        await FundDB.deletePosition(fundCode);
     },
 
     /**
@@ -159,7 +170,7 @@ const FundApi = {
             const endDate = new Date();
             endDate.setDate(endDate.getDate() - 1);
             const startDate = new Date();
-            startDate.setDate(startDate.getDate() - 10);
+            startDate.setDate(startDate.getDate() - 20);
 
             const formatDate = d => d.toISOString().split('T')[0];
             const url = `https://fund.eastmoney.com/f10/F10DataApi.aspx?type=lsjz&code=${fundCode}&page=1&sdate=${formatDate(startDate)}&edate=${formatDate(endDate)}&per=10`;
