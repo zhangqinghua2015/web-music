@@ -339,8 +339,13 @@
                 const result = await response.json();
                 if (result.status === 'success' && result.data && result.data.url) {
                     const downloadUrl = result.data.url.replace(/^http:\/\/tmpfiles\.org\//, 'http://tmpfiles.org/dl/');
-                    await navigator.clipboard.writeText(downloadUrl);
-                    btn.textContent = '已复制!';
+                    try {
+                        await navigator.clipboard.writeText(downloadUrl);
+                        btn.textContent = '已复制!';
+                    } catch (e) {
+                        prompt('链接已生成，请复制：', downloadUrl);
+                        btn.textContent = '已生成!';
+                    }
                 } else {
                     showError('生成链接失败，请下载文件：' + result.message);
                 }
