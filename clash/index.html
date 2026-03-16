@@ -352,7 +352,7 @@
             } catch (e) {
                 showError('生成链接失败，请下载文件：' + e.message);
             } finally {
-                setTimeout(() => { btn.textContent = '复制链接'; btn.disabled = false; }, 2000);
+                setTimeout(() => { btn.textContent = '复制链接'; btn.disabled = false; }, 10000);
             }
         }
 
