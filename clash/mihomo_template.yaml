@@ -61,7 +61,12 @@ proxy-groups:
   type: select
   proxies:
   - DIRECT
-
+- name: 🌍 国外媒体
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - ♻️ 自动选择
+  - 🎯 全球直连
 - name: 📲 电报信息
   type: select
   proxies:

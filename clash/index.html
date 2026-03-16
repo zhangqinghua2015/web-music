@@ -264,7 +264,7 @@
                 if (proxyGroups) {
                     template['proxy-groups'].push(...proxyGroups);
                     template['proxy-groups'].forEach(g => {
-                        if (g.name === '🚀 节点选择' || g.name === '📲 电报信息' || g.name === 'Ⓜ️ 微软服务' || g.name === '🍎 苹果服务') {
+                        if (g.name === '🚀 节点选择' || g.name === '🌍 国外媒体' || g.name === '📲 电报信息' || g.name === 'Ⓜ️ 微软服务' || g.name === '🍎 苹果服务') {
                             g.proxies.push(...proxyGroups.map(p => p.name));
                         }
                     });
@@ -282,7 +282,7 @@
                         if (g.name === '🚀 节点选择') {
                             g.proxies.push(...proxies.map(p => p.name));
                         }
-                        if (g.name === '📲 电报信息' || g.name === 'Ⓜ️ 微软服务' || g.name === '🍎 苹果服务') {
+                        if (g.name === '🌍 国外媒体' || g.name === '📲 电报信息' || g.name === 'Ⓜ️ 微软服务' || g.name === '🍎 苹果服务') {
                             g.proxies.push('♻️ 自动选择');
                         }
                     });
