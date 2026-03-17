@@ -12,6 +12,8 @@ dns:
   - 223.5.5.5
   - 114.114.114.114
   nameserver:
+  - https://cloudflare.com
+  - https://dns.google
   - 223.5.5.5
   - 114.114.114.114
   - 119.29.29.29
@@ -276,10 +278,6 @@ rule-providers:
     path: ./ruleset/applications.yaml
     interval: 86400
 rules:
-- IP-CIDR,127.0.0.0/8,DIRECT
-- IP-CIDR,192.168.0.0/16,DIRECT
-- IP-CIDR,10.0.0.0/8,DIRECT
-- IP-CIDR,172.16.0.0/12,DIRECT
 - RULE-SET,LocalAreaNetwork,🎯 全球直连
 - RULE-SET,BanAD,🛑 全球拦截
 - RULE-SET,BanProgramAD,🍃 应用净化
