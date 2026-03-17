@@ -273,12 +273,20 @@
                 const proxyGroups = data['proxy-groups'];
             
                 if (proxyGroups) {
-                    template['proxy-groups'].push(...proxyGroups);
+                    const namesToRemove = proxyGroups.map(p => p.name);
+                    template['proxy-groups'] = template['proxy-groups'].filter(g => !namesToRemove.includes(g.name));
                     template['proxy-groups'].forEach(g => {
-                        if (g.name === '🚀 节点选择' || g.name === '🌍 国外媒体' || g.name === '📲 电报信息' || g.name === 'Ⓜ️ 微软服务' || g.name === '🍎 苹果服务') {
-                            g.proxies.push(...proxyGroups.map(p => p.name));
+                        switch (g.name) {
+                            case '🚀 节点选择':
+                            case '🌍 国外媒体':
+                            case '📲 电报信息':
+                            case 'Ⓜ️ 微软服务':
+                            case '🍎 苹果服务':
+                                g.proxies.push(...proxyGroups.map(p => p.name));
+                                break;
                         }
                     });
+                    template['proxy-groups'].push(...proxyGroups);
                 } else {
                     // 手动添加自动选择节点
                     template['proxy-groups'].push({
